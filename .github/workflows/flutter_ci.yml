@@ -2,15 +2,19 @@ name: Flutter CI - Build APK
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
 
 jobs:
   build-android:
     name: Build Android APK
     runs-on: ubuntu-22.04
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -18,18 +22,21 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-         flutter-version: '3.44.8'
-          channel: 'stable'
+          flutter-version: '3.44.8'
+          channel: stable
           cache: true
 
       - name: Verify Java Version
         run: java -version
+
+      - name: Verify Flutter Version
+        run: flutter --version
 
       - name: Install Dependencies
         run: flutter pub get
