@@ -83,7 +83,7 @@ class ProductCard extends StatelessWidget {
                       onTap: () {},
                       child: CircleAvatar(
                         radius: 14.r,
-                        backgroundColor: Colors.white.withOpacity(0.9),
+                        backgroundColor: Colors.white.withValues(alpha: 0.1),
                         child: Icon(
                           product.isWishlisted
                               ? Icons.favorite

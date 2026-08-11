@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/usecases/get_products.dart';
-import '../../../domain/entities/product.dart';
 import 'product_list_event.dart';
 import 'product_list_state.dart';
 

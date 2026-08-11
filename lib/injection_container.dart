@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+
 import 'core/network/dio_client.dart';
 import 'features/product/data/datasources/product_remote_datasource.dart';
 import 'features/product/data/repositories/product_repository_impl.dart';
@@ -12,22 +13,38 @@ final sl = GetIt.instance;
 Future<void> init() async {
   // External
   const secureStorage = FlutterSecureStorage();
-  sl.registerLazySingleton(() => secureStorage);
-  sl.registerLazySingleton(() => DioClient(sl()).dio);
+
+  sl.registerLazySingleton<FlutterSecureStorage>(
+    () => secureStorage,
+  );
+
+  sl.registerLazySingleton(
+    () => DioClient(sl<FlutterSecureStorage>()).dio,
+  );
 
   // Data sources
   sl.registerLazySingleton<ProductRemoteDataSource>(
-    () => ProductRemoteDataSourceImpl(dio: sl()),
+    () => ProductRemoteDataSourceImpl(
+      sl(),
+    ),
   );
 
   // Repositories
   sl.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImpl(remoteDataSource: sl()),
+    () => ProductRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
   );
 
   // Use cases
-  sl.registerLazySingleton(() => GetProducts(sl()));
+  sl.registerLazySingleton<GetProducts>(
+    () => GetProducts(sl()),
+  );
 
   // Blocs
-  sl.registerFactory(() => ProductListBloc(getProducts: sl()));
+  sl.registerFactory<ProductListBloc>(
+    () => ProductListBloc(
+      getProducts: sl(),
+    ),
+  );
 }
