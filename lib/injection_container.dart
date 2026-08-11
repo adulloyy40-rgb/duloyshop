@@ -11,38 +11,62 @@ import 'features/product/presentation/bloc/product_list/product_list_bloc.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // =========================
   // External
-  const secureStorage = FlutterSecureStorage();
+  // =========================
+
+  const secureStorage =
+      FlutterSecureStorage();
 
   sl.registerLazySingleton<FlutterSecureStorage>(
     () => secureStorage,
   );
 
-  sl.registerLazySingleton(
-    () => DioClient(sl<FlutterSecureStorage>()).dio,
+  sl.registerLazySingleton<DioClient>(
+    () => DioClient(
+      sl<FlutterSecureStorage>(),
+    ),
   );
 
-  // Data sources
+  sl.registerLazySingleton(
+    () => sl<DioClient>().dio,
+  );
+
+  // =========================
+  // Data Sources
+  // =========================
+
   sl.registerLazySingleton<ProductRemoteDataSource>(
     () => ProductRemoteDataSourceImpl(
       sl(),
     ),
   );
 
+  // =========================
   // Repositories
+  // =========================
+
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImpl(
       remoteDataSource: sl(),
     ),
   );
 
-  // Use cases
-  sl.registerLazySingleton<GetProducts>(
-    () => GetProducts(sl()),
+  // =========================
+  // Use Cases
+  // =========================
+
+  sl.registerLazySingleton(
+    () => GetProducts(
+      sl(),
+    ),
   );
 
-  // Blocs
-  sl.registerFactory<ProductListBloc>(
+  // =========================
+  // BLoC
+  // =========================
+
+  sl.registerFactory(
     () => ProductListBloc(
       getProducts: sl(),
     ),
