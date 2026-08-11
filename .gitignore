@@ -18,6 +18,13 @@ android/app/profile/
 android/app/release/
 *.jks
 key.properties
+local.properties
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
 
 # IDE
 .idea/
