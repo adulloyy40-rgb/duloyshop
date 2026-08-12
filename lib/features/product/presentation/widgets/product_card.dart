@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/network/app_config.dart';
 import '../../domain/entities/product.dart';
 
 class ProductCard extends StatelessWidget {
@@ -15,7 +16,6 @@ class ProductCard extends StatelessWidget {
 
   String _formatPrice(double price) {
     final value = price.round().toString();
-
     final buffer = StringBuffer();
 
     for (int i = 0; i < value.length; i++) {
@@ -29,20 +29,47 @@ class ProductCard extends StatelessWidget {
     return 'Rp ${buffer.toString()}';
   }
 
+  String _buildImageUrl(String imageUrl) {
+    if (imageUrl.isEmpty) {
+      return '';
+    }
+
+    // Kalau API sudah memberikan URL lengkap,
+    // langsung gunakan URL tersebut.
+    if (imageUrl.startsWith('http://') ||
+        imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+
+    // API kita mengirim path seperti:
+    // /uploads/products/wireless-headset.png
+    final serverUrl = AppConfig.defaultServerUrl;
+
+    if (imageUrl.startsWith('/')) {
+      return '$serverUrl$imageUrl';
+    }
+
+    return '$serverUrl/$imageUrl';
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasDiscount =
         product.discountPrice != null &&
         product.discountPrice! < product.price;
 
-    final imageUrl = product.images.isNotEmpty
+    final imagePath = product.images.isNotEmpty
         ? product.images.first
         : '';
 
+    final imageUrl = _buildImageUrl(imagePath);
+
     return GestureDetector(
-      onTap: () => context.push(
-        '/product/${product.id}',
-      ),
+      onTap: () {
+        context.push(
+          '/product/${product.id}',
+        );
+      },
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
@@ -52,39 +79,46 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // =========================
+            // GAMBAR PRODUK
+            // =========================
             Expanded(
               flex: 3,
               child: Stack(
                 children: [
                   SizedBox(
                     width: double.infinity,
+                    height: double.infinity,
                     child: imageUrl.isNotEmpty
                         ? Hero(
-                            tag: 'product_image_${product.id}',
+                            tag:
+                                'product_image_${product.id}',
                             child: CachedNetworkImage(
                               imageUrl: imageUrl,
                               width: double.infinity,
+                              height: double.infinity,
                               fit: BoxFit.cover,
-                              placeholder: (
-                                context,
-                                url,
-                              ) {
+                              placeholder:
+                                  (context, url) {
                                 return Container(
                                   color: Colors.grey[200],
-                                  child: const Center(
+                                  child:
+                                      const Center(
                                     child:
                                         CircularProgressIndicator(),
                                   ),
                                 );
                               },
-                              errorWidget: (
+                              errorWidget:
+                                  (
                                 context,
                                 url,
                                 error,
                               ) {
                                 return Container(
                                   color: Colors.grey[200],
-                                  child: const Center(
+                                  child:
+                                      const Center(
                                     child: Icon(
                                       Icons
                                           .image_not_supported_outlined,
@@ -100,7 +134,8 @@ class ProductCard extends StatelessWidget {
                             color: Colors.grey[200],
                             child: const Center(
                               child: Icon(
-                                Icons.image_not_supported_outlined,
+                                Icons
+                                    .image_not_supported_outlined,
                                 color: Colors.grey,
                                 size: 40,
                               ),
@@ -108,33 +143,42 @@ class ProductCard extends StatelessWidget {
                           ),
                   ),
 
-                  // Label diskon
+                  // =========================
+                  // LABEL DISKON
+                  // =========================
                   if (hasDiscount)
                     Positioned(
                       top: 8.h,
                       left: 8.w,
                       child: Container(
-                        padding: EdgeInsets.symmetric(
+                        padding:
+                            EdgeInsets.symmetric(
                           horizontal: 8.w,
                           vertical: 4.h,
                         ),
-                        decoration: BoxDecoration(
+                        decoration:
+                            BoxDecoration(
                           color: Colors.red,
                           borderRadius:
-                              BorderRadius.circular(4.r),
+                              BorderRadius.circular(
+                            4.r,
+                          ),
                         ),
                         child: Text(
                           '-${((1 - product.discountPrice! / product.price) * 100).toInt()}%',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10.sp,
-                            fontWeight: FontWeight.bold,
+                            fontWeight:
+                                FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
 
-                  // Tombol wishlist
+                  // =========================
+                  // WISHLIST
+                  // =========================
                   Positioned(
                     top: 8.h,
                     right: 8.w,
@@ -147,10 +191,12 @@ class ProductCard extends StatelessWidget {
                         child: Icon(
                           product.isWishlisted
                               ? Icons.favorite
-                              : Icons.favorite_border,
-                          color: product.isWishlisted
-                              ? Colors.red
-                              : Colors.white,
+                              : Icons
+                                  .favorite_border,
+                          color:
+                              product.isWishlisted
+                                  ? Colors.red
+                                  : Colors.white,
                           size: 22.sp,
                         ),
                       ),
@@ -160,7 +206,9 @@ class ProductCard extends StatelessWidget {
               ),
             ),
 
-            // Informasi produk
+            // =========================
+            // INFORMASI PRODUK
+            // =========================
             Expanded(
               flex: 2,
               child: Padding(
@@ -172,10 +220,12 @@ class ProductCard extends StatelessWidget {
                     Text(
                       product.name,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      overflow:
+                          TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
+                        fontWeight:
+                            FontWeight.w600,
                         color: Theme.of(context)
                             .textTheme
                             .bodyLarge
@@ -185,6 +235,7 @@ class ProductCard extends StatelessWidget {
 
                     SizedBox(height: 4.h),
 
+                    // Rating
                     Row(
                       children: [
                         Icon(
@@ -194,17 +245,20 @@ class ProductCard extends StatelessWidget {
                         ),
                         SizedBox(width: 2.w),
                         Text(
-                          product.rating.toStringAsFixed(1),
+                          product.rating
+                              .toStringAsFixed(1),
                           style: TextStyle(
                             fontSize: 10.sp,
-                            color: Colors.grey[600],
+                            color:
+                                Colors.grey[600],
                           ),
                         ),
                         Text(
                           ' (${product.reviewCount})',
                           style: TextStyle(
                             fontSize: 10.sp,
-                            color: Colors.grey[400],
+                            color:
+                                Colors.grey[400],
                           ),
                         ),
                       ],
@@ -212,6 +266,7 @@ class ProductCard extends StatelessWidget {
 
                     SizedBox(height: 4.h),
 
+                    // Stok
                     Text(
                       'Stok: ${product.stock}',
                       style: TextStyle(
@@ -222,7 +277,9 @@ class ProductCard extends StatelessWidget {
 
                     const Spacer(),
 
-                    // Harga
+                    // =========================
+                    // HARGA
+                    // =========================
                     Row(
                       children: [
                         Flexible(
@@ -232,12 +289,15 @@ class ProductCard extends StatelessWidget {
                                   product.price,
                             ),
                             overflow:
-                                TextOverflow.ellipsis,
+                                TextOverflow
+                                    .ellipsis,
                             style: TextStyle(
                               fontSize: 13.sp,
                               fontWeight:
                                   FontWeight.bold,
-                              color: Colors.blueAccent,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -250,13 +310,15 @@ class ProductCard extends StatelessWidget {
                                 product.price,
                               ),
                               overflow:
-                                  TextOverflow.ellipsis,
+                                  TextOverflow
+                                      .ellipsis,
                               style: TextStyle(
                                 fontSize: 10.sp,
                                 decoration:
                                     TextDecoration
                                         .lineThrough,
-                                color: Colors.grey,
+                                color:
+                                    Colors.grey,
                               ),
                             ),
                           ),

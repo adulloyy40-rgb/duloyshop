@@ -20,6 +20,30 @@ class ProductRemoteDataSourceImpl
 
   ProductRemoteDataSourceImpl(this.dio);
 
+  String _getServerUrl(Response response) {
+    final baseUrl =
+        response.requestOptions.baseUrl;
+
+    if (baseUrl.endsWith('/api')) {
+      return baseUrl.substring(
+        0,
+        baseUrl.length - 4,
+      );
+    }
+
+    if (baseUrl.endsWith('/api/')) {
+      return baseUrl.substring(
+        0,
+        baseUrl.length - 5,
+      );
+    }
+
+    return baseUrl.replaceAll(
+      RegExp(r'/$'),
+      '',
+    );
+  }
+
   @override
   Future<List<ProductModel>> getProducts({
     int page = 1,
@@ -37,7 +61,8 @@ class ProductRemoteDataSourceImpl
       queryParameters['category'] = category;
     }
 
-    if (searchQuery != null && searchQuery.isNotEmpty) {
+    if (searchQuery != null &&
+        searchQuery.isNotEmpty) {
       queryParameters['q'] = searchQuery;
     }
 
@@ -81,15 +106,20 @@ class ProductRemoteDataSourceImpl
       );
     }
 
-    return items
-        .map(
-          (json) => ProductModel.fromJson(
-            Map<String, dynamic>.from(
-              json as Map,
-            ),
-          ),
-        )
-        .toList();
+    final serverUrl =
+        _getServerUrl(response);
+
+    return items.map((json) {
+      final productJson =
+          Map<String, dynamic>.from(
+        json as Map,
+      );
+
+      return ProductModel.fromJson(
+        productJson,
+        serverUrl: serverUrl,
+      );
+    }).toList();
   }
 
   @override
@@ -123,8 +153,12 @@ class ProductRemoteDataSourceImpl
       );
     }
 
+    final serverUrl =
+        _getServerUrl(response);
+
     return ProductModel.fromJson(
       Map<String, dynamic>.from(data),
+      serverUrl: serverUrl,
     );
   }
 }

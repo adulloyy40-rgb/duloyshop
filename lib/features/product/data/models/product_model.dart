@@ -16,14 +16,31 @@ class ProductModel extends Product {
     super.isWishlisted,
   });
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) {
-    final imageUrl = json['image_url']?.toString();
+  factory ProductModel.fromJson(
+    Map<String, dynamic> json, {
+    String? serverUrl,
+  }) {
+    final rawImageUrl = json['image_url']?.toString();
 
     final images = <String>[];
 
-    if (imageUrl != null &&
-        imageUrl.isNotEmpty &&
-        imageUrl != 'null') {
+    if (rawImageUrl != null &&
+        rawImageUrl.isNotEmpty &&
+        rawImageUrl != 'null') {
+      String imageUrl = rawImageUrl;
+
+      // Jika API mengembalikan:
+      // /uploads/products/nama.png
+      //
+      // ubah menjadi:
+      // http://IP-SERVER:8000/uploads/products/nama.png
+      if (imageUrl.startsWith('/') &&
+          serverUrl != null &&
+          serverUrl.isNotEmpty) {
+        imageUrl =
+            '${serverUrl.replaceAll(RegExp(r'/$'), '')}$imageUrl';
+      }
+
       images.add(imageUrl);
     }
 
@@ -38,7 +55,8 @@ class ProductModel extends Product {
       category: json['category_name']?.toString() ??
           json['category']?.toString() ??
           '',
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      rating:
+          (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount:
           (json['review_count'] as num?)?.toInt() ?? 0,
       stock:
