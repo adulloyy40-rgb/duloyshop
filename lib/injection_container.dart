@@ -4,6 +4,8 @@ import 'package:get_it/get_it.dart';
 
 import 'core/network/dio_client.dart';
 
+import 'features/cart/presentation/bloc/cart/cart_bloc.dart';
+
 import 'features/product/data/datasources/product_remote_datasource.dart';
 import 'features/product/data/repositories/product_repository_impl.dart';
 
@@ -88,5 +90,13 @@ Future<void> init() async {
     () => ProductDetailBloc(
       productRepository: sl<ProductRepository>(),
     ),
+  );
+
+  // ============================================================
+  // Cart BLoC
+  // ============================================================
+
+  sl.registerFactory<CartBloc>(
+    () => CartBloc(),
   );
 }
