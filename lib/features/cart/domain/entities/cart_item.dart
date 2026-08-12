@@ -1,8 +1,6 @@
-import 'package:equatable/equatable.dart';
-
 import '../../../product/domain/entities/product.dart';
 
-class CartItem extends Equatable {
+class CartItem {
   final Product product;
   final int quantity;
 
@@ -11,8 +9,12 @@ class CartItem extends Equatable {
     required this.quantity,
   });
 
-  double get subtotal =>
-      (product.discountPrice ?? product.price) * quantity;
+  double get subtotal {
+    final price =
+        product.discountPrice ?? product.price;
+
+    return price * quantity;
+  }
 
   CartItem copyWith({
     Product? product,
@@ -23,10 +25,4 @@ class CartItem extends Equatable {
       quantity: quantity ?? this.quantity,
     );
   }
-
-  @override
-  List<Object?> get props => [
-        product,
-        quantity,
-      ];
 }

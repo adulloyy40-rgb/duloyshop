@@ -9,6 +9,10 @@ class CartState extends Equatable {
     this.items = const [],
   });
 
+  // ============================================================
+  // TOTAL ITEM
+  // ============================================================
+
   int get totalItems {
     return items.fold(
       0,
@@ -16,12 +20,20 @@ class CartState extends Equatable {
     );
   }
 
-  double get subtotal {
+  // ============================================================
+  // TOTAL HARGA
+  // ============================================================
+
+  double get totalPrice {
     return items.fold(
-      0,
+      0.0,
       (total, item) => total + item.subtotal,
     );
   }
+
+  // ============================================================
+  // COPY STATE
+  // ============================================================
 
   CartState copyWith({
     List<CartItem>? items,

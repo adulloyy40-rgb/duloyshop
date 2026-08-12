@@ -25,7 +25,8 @@ class ProductDetailPage extends StatelessWidget {
     final buffer = StringBuffer();
 
     for (int i = 0; i < value.length; i++) {
-      if (i > 0 && (value.length - i) % 3 == 0) {
+      if (i > 0 &&
+          (value.length - i) % 3 == 0) {
         buffer.write('.');
       }
 
@@ -38,16 +39,21 @@ class ProductDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<ProductDetailBloc>()
-        ..add(
-          LoadProductDetail(productId),
-        ),
+      create: (_) =>
+          sl<ProductDetailBloc>()
+            ..add(
+              LoadProductDetail(productId),
+            ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Detail Produk'),
+          title: const Text(
+            'Detail Produk',
+          ),
           centerTitle: true,
         ),
-        body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        body: BlocBuilder<
+            ProductDetailBloc,
+            ProductDetailState>(
           builder: (context, state) {
             // ==================================================
             // LOADING
@@ -55,7 +61,8 @@ class ProductDetailPage extends StatelessWidget {
 
             if (state is ProductDetailLoading) {
               return const Center(
-                child: CircularProgressIndicator(),
+                child:
+                    CircularProgressIndicator(),
               );
             }
 
@@ -66,224 +73,287 @@ class ProductDetailPage extends StatelessWidget {
             if (state is ProductDetailError) {
               return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(24.w),
+                  padding:
+                      EdgeInsets.all(24.w),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize:
+                        MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.error_outline,
                         size: 56.sp,
-                        color: Colors.redAccent,
+                        color:
+                            Colors.redAccent,
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(
+                        height: 16.h,
+                      ),
                       Text(
                         'Gagal Memuat Produk',
-                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
+                          fontWeight:
+                              FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(
+                        height: 8.h,
+                      ),
                       Text(
                         state.message,
-                        textAlign: TextAlign.center,
+                        textAlign:
+                            TextAlign.center,
                         style: TextStyle(
                           fontSize: 13.sp,
-                          color: Colors.grey[600],
+                          color:
+                              Colors.grey,
                         ),
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(
+                        height: 20.h,
+                      ),
                       ElevatedButton.icon(
                         onPressed: () {
                           context
-                              .read<ProductDetailBloc>()
+                              .read<
+                                  ProductDetailBloc>()
                               .add(
-                                LoadProductDetail(productId),
+                                LoadProductDetail(
+                                  productId,
+                                ),
                               );
                         },
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Coba Lagi'),
+                        icon: const Icon(
+                          Icons.refresh,
+                        ),
+                        label: const Text(
+                          'Coba Lagi',
+                        ),
                       ),
                     ],
                   ),
                 ),
               );
             }
-
-            // ==================================================
-            // PRODUCT LOADED
+// ==================================================
+            // LOADED
             // ==================================================
 
             if (state is ProductDetailLoaded) {
-              final product = state.product;
+              final product =
+                  state.product;
 
-              final imageUrl = product.images.isNotEmpty
-                  ? product.images.first
-                  : '';
+              final imageUrl =
+                  product.images.isNotEmpty
+                      ? product.images.first
+                      : '';
 
               final hasDiscount =
-                  product.discountPrice != null &&
-                  product.discountPrice! < product.price;
+                  product.discountPrice !=
+                      null &&
+                  product.discountPrice! <
+                      product.price;
 
               final displayPrice =
-                  product.discountPrice ?? product.price;
+                  product.discountPrice ??
+                      product.price;
 
               return SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
-                    // ==================================================
-                    // GAMBAR PRODUK
-                    // ==================================================
+                    // =========================================
+                    // GAMBAR
+                    // =========================================
 
                     AspectRatio(
                       aspectRatio: 1,
                       child: imageUrl.isNotEmpty
                           ? CachedNetworkImage(
-                              imageUrl: imageUrl,
-                              width: double.infinity,
+                              imageUrl:
+                                  imageUrl,
+                              width:
+                                  double.infinity,
                               fit: BoxFit.cover,
-                              placeholder: (
+                              placeholder:
+                                  (
                                 context,
                                 url,
                               ) {
                                 return Container(
-                                  color: Colors.grey[200],
-                                  child: const Center(
+                                  color:
+                                      Colors.grey.shade900,
+                                  child:
+                                      const Center(
                                     child:
                                         CircularProgressIndicator(),
                                   ),
                                 );
                               },
-                              errorWidget: (
+                              errorWidget:
+                                  (
                                 context,
                                 url,
                                 error,
                               ) {
                                 return Container(
-                                  color: Colors.grey[200],
+                                  color:
+                                      Colors.grey.shade900,
                                   child: Icon(
                                     Icons
                                         .image_not_supported_outlined,
                                     size: 64.sp,
-                                    color: Colors.grey,
+                                    color:
+                                        Colors.grey,
                                   ),
                                 );
                               },
                             )
                           : Container(
-                              color: Colors.grey[200],
+                              color:
+                                  Colors.grey.shade900,
                               child: Icon(
                                 Icons
                                     .image_not_supported_outlined,
                                 size: 64.sp,
-                                color: Colors.grey,
+                                color:
+                                    Colors.grey,
                               ),
                             ),
                     ),
 
-                    // ==================================================
-                    // INFORMASI PRODUK
-                    // ==================================================
+                    // =========================================
+                    // INFORMASI
+                    // =========================================
 
                     Padding(
-                      padding: EdgeInsets.all(16.w),
+                      padding:
+                          EdgeInsets.all(16.w),
                       child: Column(
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
                         children: [
-                          // ==================================================
                           // KATEGORI
-                          // ==================================================
 
-                          if (product.category.isNotEmpty)
+                          if (product
+                              .category
+                              .isNotEmpty)
                             Text(
                               product.category,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.blueAccent,
-                                fontWeight: FontWeight.w600,
+                              style:
+                                  TextStyle(
+                                fontSize:
+                                    13.sp,
+                                color:
+                                    Colors.blueAccent,
+                                fontWeight:
+                                    FontWeight.w600,
                               ),
                             ),
 
-                          SizedBox(height: 6.h),
+                          SizedBox(
+                            height: 6.h,
+                          ),
 
-                          // ==================================================
-                          // NAMA PRODUK
-                          // ==================================================
+                          // NAMA
 
                           Text(
                             product.name,
-                            style: TextStyle(
-                              fontSize: 22.sp,
-                              fontWeight: FontWeight.bold,
+                            style:
+                                TextStyle(
+                              fontSize:
+                                  22.sp,
+                              fontWeight:
+                                  FontWeight.bold,
                             ),
                           ),
 
-                          SizedBox(height: 10.h),
+                          SizedBox(
+                            height: 10.h,
+                          ),
 
-                          // ==================================================
                           // RATING
-                          // ==================================================
 
                           Row(
                             children: [
                               const Icon(
                                 Icons.star,
-                                color: Colors.amber,
+                                color:
+                                    Colors.amber,
                               ),
-                              SizedBox(width: 4.w),
+                              SizedBox(
+                                width: 4.w,
+                              ),
                               Text(
                                 product.rating
-                                    .toStringAsFixed(1),
-                                style: TextStyle(
-                                  fontSize: 14.sp,
+                                    .toStringAsFixed(
+                                  1,
+                                ),
+                                style:
+                                    TextStyle(
+                                  fontSize:
+                                      14.sp,
                                   fontWeight:
                                       FontWeight.w600,
                                 ),
                               ),
-                              SizedBox(width: 4.w),
+                              SizedBox(
+                                width: 4.w,
+                              ),
                               Text(
                                 '(${product.reviewCount} ulasan)',
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: Colors.grey[600],
+                                style:
+                                    TextStyle(
+                                  fontSize:
+                                      13.sp,
+                                  color:
+                                      Colors.grey,
                                 ),
                               ),
                             ],
                           ),
 
-                          SizedBox(height: 16.h),
+                          SizedBox(
+                            height: 16.h,
+                          ),
 
-                          // ==================================================
                           // HARGA
-                          // ==================================================
 
                           Row(
                             crossAxisAlignment:
-                                CrossAxisAlignment.end,
+                                CrossAxisAlignment
+                                    .end,
                             children: [
-                              Flexible(
-                                child: Text(
-                                  _formatPrice(displayPrice),
-                                  overflow:
-                                      TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 24.sp,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color: Colors.blueAccent,
-                                  ),
+                              Text(
+                                _formatPrice(
+                                  displayPrice,
+                                ),
+                                style:
+                                    TextStyle(
+                                  fontSize:
+                                      25.sp,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color:
+                                      Colors.blueAccent,
                                 ),
                               ),
                               if (hasDiscount) ...[
-                                SizedBox(width: 10.w),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
                                 Text(
-                                  _formatPrice(product.price),
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    color: Colors.grey,
+                                  _formatPrice(
+                                    product
+                                        .price,
+                                  ),
+                                  style:
+                                      TextStyle(
+                                    fontSize:
+                                        13.sp,
+                                    color:
+                                        Colors.grey,
                                     decoration:
                                         TextDecoration
                                             .lineThrough,
@@ -293,31 +363,66 @@ class ProductDetailPage extends StatelessWidget {
                             ],
                           ),
 
-                          SizedBox(height: 20.h),
+                          SizedBox(
+                            height: 20.h,
+                          ),
 
-                          // ==================================================
                           // STOK
-                          // ==================================================
 
                           Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(12.w),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                            width:
+                                double.infinity,
+                            padding:
+                                EdgeInsets.all(
+                              14.w,
+                            ),
+                            decoration:
+                                BoxDecoration(
+                              color: product
+                                          .stock >
+                                      0
+                                  ? Colors.blueAccent
+                                      .withValues(
+                                      alpha:
+                                          0.10,
+                                    )
+                                  : Colors.redAccent
+                                      .withValues(
+                                      alpha:
+                                          0.10,
+                                    ),
                               borderRadius:
-                                  BorderRadius.circular(10.r),
+                                  BorderRadius
+                                      .circular(
+                                12.r,
+                              ),
                             ),
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.inventory_2_outlined,
-                                  size: 20.sp,
+                                  Icons
+                                      .inventory_2_outlined,
+                                  size: 21.sp,
+                                  color: product
+                                              .stock >
+                                          0
+                                      ? Colors
+                                          .blueAccent
+                                      : Colors
+                                          .redAccent,
                                 ),
-                                SizedBox(width: 8.w),
+                                SizedBox(
+                                  width: 8.w,
+                                ),
                                 Text(
-                                  'Stok tersedia: ${product.stock}',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
+                                  product.stock >
+                                          0
+                                      ? 'Stok tersedia: ${product.stock}'
+                                      : 'Stok habis',
+                                  style:
+                                      TextStyle(
+                                    fontSize:
+                                        14.sp,
                                     fontWeight:
                                         FontWeight.w600,
                                   ),
@@ -326,104 +431,175 @@ class ProductDetailPage extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 24.h),
+                          SizedBox(
+                            height: 24.h,
+                          ),
 
-                          // ==================================================
                           // DESKRIPSI
-                          // ==================================================
-
-                          Text(
+Text(
                             'Deskripsi Produk',
-                            style: TextStyle(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
+                            style:
+                                TextStyle(
+                              fontSize:
+                                  18.sp,
+                              fontWeight:
+                                  FontWeight.bold,
                             ),
                           ),
 
-                          SizedBox(height: 8.h),
+                          SizedBox(
+                            height: 8.h,
+                          ),
 
                           Text(
-                            product.description.isNotEmpty
-                                ? product.description
+                            product.description
+                                    .isNotEmpty
+                                ? product
+                                    .description
                                 : 'Tidak ada deskripsi produk.',
-                            style: TextStyle(
-                              fontSize: 14.sp,
+                            style:
+                                TextStyle(
+                              fontSize:
+                                  14.sp,
                               height: 1.5,
-                              color: Colors.grey[700],
+                              color:
+                                  Colors.grey,
                             ),
                           ),
 
-                          SizedBox(height: 24.h),
+                          SizedBox(
+                            height: 24.h,
+                          ),
 
-                          // ==================================================
                           // VARIAN
-                          // ==================================================
 
-                          if (product.variants.isNotEmpty) ...[
+                          if (product
+                              .variants
+                              .isNotEmpty) ...[
                             Text(
                               'Varian Produk',
-                              style: TextStyle(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold,
+                              style:
+                                  TextStyle(
+                                fontSize:
+                                    18.sp,
+                                fontWeight:
+                                    FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(
+                              height: 10.h,
+                            ),
                             Wrap(
                               spacing: 8.w,
-                              runSpacing: 8.h,
-                              children:
-                                  product.variants.map(
-                                (variant) {
+                              runSpacing:
+                                  8.h,
+                              children: product
+                                  .variants
+                                  .map(
+                                (
+                                  variant,
+                                ) {
                                   return Chip(
-                                    label: Text(variant),
+                                    label:
+                                        Text(
+                                      variant,
+                                    ),
                                   );
                                 },
                               ).toList(),
                             ),
-                            SizedBox(height: 24.h),
+                            SizedBox(
+                              height: 24.h,
+                            ),
                           ],
 
-                          // ==================================================
+                          // ===================================
                           // TAMBAH KE KERANJANG
-                          // ==================================================
+                          // ===================================
 
                           SizedBox(
-                            width: double.infinity,
-                            height: 52.h,
-                            child: ElevatedButton.icon(
-                              onPressed: product.stock > 0
-                                  ? () {
-                                      // Masukkan produk ke CartBloc.
-                                      sl<CartBloc>().add(
-                                        AddToCart(product),
-                                      );
+                            width:
+                                double.infinity,
+                            height: 54.h,
+                            child:
+                                ElevatedButton.icon(
+                              onPressed:
+                                  product.stock >
+                                          0
+                                      ? () {
+                                          sl<CartBloc>()
+                                              .add(
+                                            AddToCart(
+                                              product,
+                                            ),
+                                          );
 
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            '${product.name} ditambahkan ke keranjang.',
-                                          ),
-                                          behavior:
-                                              SnackBarBehavior
-                                                  .floating,
-                                        ),
-                                      );
-                                    }
-                                  : null,
-                              icon: const Icon(
-                                Icons.shopping_cart_outlined,
+                                          ScaffoldMessenger
+                                              .of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content:
+                                                  Text(
+                                                '${product.name} ditambahkan ke keranjang',
+                                              ),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                        }
+                                      : null,
+                              style:
+                                  ElevatedButton
+                                      .styleFrom(
+                                backgroundColor:
+                                    Colors
+                                        .blueAccent,
+                                foregroundColor:
+                                    Colors.white,
+                                disabledBackgroundColor:
+                                    Colors
+                                        .grey
+                                        .shade800,
+                                disabledForegroundColor:
+                                    Colors
+                                        .grey
+                                        .shade500,
+                                elevation: 0,
+                                shape:
+                                    RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius
+                                          .circular(
+                                    14.r,
+                                  ),
+                                ),
+                              ),
+                              icon:
+                                  const Icon(
+                                Icons
+                                    .shopping_cart_outlined,
                               ),
                               label: Text(
-                                product.stock > 0
+                                product.stock >
+                                        0
                                     ? 'Tambah ke Keranjang'
                                     : 'Stok Habis',
+                                style:
+                                    TextStyle(
+                                  fontSize:
+                                      16.sp,
+                                  fontWeight:
+                                      FontWeight
+                                          .bold,
+                                ),
                               ),
                             ),
                           ),
 
-                          SizedBox(height: 20.h),
+                          SizedBox(
+                            height: 24.h,
+                          ),
                         ],
                       ),
                     ),
@@ -433,7 +609,7 @@ class ProductDetailPage extends StatelessWidget {
             }
 
             // ==================================================
-            // INITIAL / FALLBACK
+            // INITIAL
             // ==================================================
 
             return const Center(

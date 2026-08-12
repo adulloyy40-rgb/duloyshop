@@ -13,23 +13,44 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<ClearCart>(_onClearCart);
   }
 
+  // ============================================================
+  // ADD TO CART
+  // ============================================================
+
   void _onAddToCart(
     AddToCart event,
     Emitter<CartState> emit,
   ) {
-    final items = List<CartItem>.from(state.items);
+    final items = List<CartItem>.from(
+      state.items,
+    );
 
     final existingIndex = items.indexWhere(
       (item) => item.product.id == event.product.id,
     );
 
     if (existingIndex >= 0) {
-      final existingItem = items[existingIndex];
+      final existingItem =
+          items[existingIndex];
 
-      items[existingIndex] = existingItem.copyWith(
-        quantity: existingItem.quantity + 1,
+      // Jangan melebihi stok
+      if (existingItem.quantity >=
+          existingItem.product.stock) {
+        return;
+      }
+
+      items[existingIndex] =
+          existingItem.copyWith(
+        quantity:
+            existingItem.quantity + 1,
       );
     } else {
+      // Produk tidak boleh ditambahkan
+      // kalau stok kosong.
+      if (event.product.stock <= 0) {
+        return;
+      }
+
       items.add(
         CartItem(
           product: event.product,
@@ -39,9 +60,15 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     }
 
     emit(
-      state.copyWith(items: items),
+      state.copyWith(
+        items: items,
+      ),
     );
   }
+
+  // ============================================================
+  // REMOVE
+  // ============================================================
 
   void _onRemoveFromCart(
     RemoveFromCart event,
@@ -49,23 +76,34 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   ) {
     final items = state.items
         .where(
-          (item) => item.product.id != event.productId,
+          (item) =>
+              item.product.id !=
+              event.productId,
         )
         .toList();
 
     emit(
-      state.copyWith(items: items),
+      state.copyWith(
+        items: items,
+      ),
     );
   }
+
+  // ============================================================
+  // INCREASE
+  // ============================================================
 
   void _onIncreaseQuantity(
     IncreaseCartQuantity event,
     Emitter<CartState> emit,
   ) {
-    final items = List<CartItem>.from(state.items);
+    final items =
+        List<CartItem>.from(state.items);
 
     final index = items.indexWhere(
-      (item) => item.product.id == event.productId,
+      (item) =>
+          item.product.id ==
+          event.productId,
     );
 
     if (index == -1) {
@@ -74,27 +112,39 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
     final item = items[index];
 
-    if (item.quantity >= item.product.stock) {
+    if (item.quantity >=
+        item.product.stock) {
       return;
     }
 
-    items[index] = item.copyWith(
-      quantity: item.quantity + 1,
+    items[index] =
+        item.copyWith(
+      quantity:
+          item.quantity + 1,
     );
 
     emit(
-      state.copyWith(items: items),
+      state.copyWith(
+        items: items,
+      ),
     );
   }
+
+  // ============================================================
+  // DECREASE
+  // ============================================================
 
   void _onDecreaseQuantity(
     DecreaseCartQuantity event,
     Emitter<CartState> emit,
   ) {
-    final items = List<CartItem>.from(state.items);
+    final items =
+        List<CartItem>.from(state.items);
 
     final index = items.indexWhere(
-      (item) => item.product.id == event.productId,
+      (item) =>
+          item.product.id ==
+          event.productId,
     );
 
     if (index == -1) {
@@ -106,15 +156,23 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (item.quantity <= 1) {
       items.removeAt(index);
     } else {
-      items[index] = item.copyWith(
-        quantity: item.quantity - 1,
+      items[index] =
+          item.copyWith(
+        quantity:
+            item.quantity - 1,
       );
     }
 
     emit(
-      state.copyWith(items: items),
+      state.copyWith(
+        items: items,
+      ),
     );
   }
+
+  // ============================================================
+  // CLEAR CART
+  // ============================================================
 
   void _onClearCart(
     ClearCart event,

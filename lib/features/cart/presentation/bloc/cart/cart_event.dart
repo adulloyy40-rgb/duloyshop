@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-
 import '../../../../product/domain/entities/product.dart';
 
 abstract class CartEvent extends Equatable {
@@ -9,6 +8,10 @@ abstract class CartEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
+// ============================================================
+// TAMBAH PRODUK
+// ============================================================
 
 class AddToCart extends CartEvent {
   final Product product;
@@ -19,6 +22,10 @@ class AddToCart extends CartEvent {
   List<Object?> get props => [product];
 }
 
+// ============================================================
+// HAPUS PRODUK
+// ============================================================
+
 class RemoveFromCart extends CartEvent {
   final String productId;
 
@@ -27,6 +34,10 @@ class RemoveFromCart extends CartEvent {
   @override
   List<Object?> get props => [productId];
 }
+
+// ============================================================
+// TAMBAH QUANTITY
+// ============================================================
 
 class IncreaseCartQuantity extends CartEvent {
   final String productId;
@@ -37,6 +48,10 @@ class IncreaseCartQuantity extends CartEvent {
   List<Object?> get props => [productId];
 }
 
+// ============================================================
+// KURANGI QUANTITY
+// ============================================================
+
 class DecreaseCartQuantity extends CartEvent {
   final String productId;
 
@@ -46,4 +61,10 @@ class DecreaseCartQuantity extends CartEvent {
   List<Object?> get props => [productId];
 }
 
-class ClearCart extends CartEvent {}
+// ============================================================
+// KOSONGKAN KERANJANG
+// ============================================================
+
+class ClearCart extends CartEvent {
+  const ClearCart();
+}
