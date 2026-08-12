@@ -4,6 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../injection_container.dart';
+
+import '../../../cart/presentation/bloc/cart/cart_bloc.dart';
+import '../../../cart/presentation/bloc/cart/cart_event.dart';
+
 import '../bloc/product_detail/product_detail_bloc.dart';
 import '../bloc/product_detail/product_detail_event.dart';
 import '../bloc/product_detail/product_detail_state.dart';
@@ -45,9 +49,9 @@ class ProductDetailPage extends StatelessWidget {
         ),
         body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (context, state) {
-            // =====================================================
+            // ==================================================
             // LOADING
-            // =====================================================
+            // ==================================================
 
             if (state is ProductDetailLoading) {
               return const Center(
@@ -55,9 +59,9 @@ class ProductDetailPage extends StatelessWidget {
               );
             }
 
-            // =====================================================
+            // ==================================================
             // ERROR
-            // =====================================================
+            // ==================================================
 
             if (state is ProductDetailError) {
               return Center(
@@ -74,6 +78,7 @@ class ProductDetailPage extends StatelessWidget {
                       SizedBox(height: 16.h),
                       Text(
                         'Gagal Memuat Produk',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
@@ -91,7 +96,9 @@ class ProductDetailPage extends StatelessWidget {
                       SizedBox(height: 20.h),
                       ElevatedButton.icon(
                         onPressed: () {
-                          context.read<ProductDetailBloc>().add(
+                          context
+                              .read<ProductDetailBloc>()
+                              .add(
                                 LoadProductDetail(productId),
                               );
                         },
@@ -104,9 +111,9 @@ class ProductDetailPage extends StatelessWidget {
               );
             }
 
-            // =====================================================
-            // DATA PRODUK BERHASIL
-            // =====================================================
+            // ==================================================
+            // PRODUCT LOADED
+            // ==================================================
 
             if (state is ProductDetailLoaded) {
               final product = state.product;
@@ -126,9 +133,9 @@ class ProductDetailPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // =================================================
+                    // ==================================================
                     // GAMBAR PRODUK
-                    // =================================================
+                    // ==================================================
 
                     AspectRatio(
                       aspectRatio: 1,
@@ -144,7 +151,8 @@ class ProductDetailPage extends StatelessWidget {
                                 return Container(
                                   color: Colors.grey[200],
                                   child: const Center(
-                                    child: CircularProgressIndicator(),
+                                    child:
+                                        CircularProgressIndicator(),
                                   ),
                                 );
                               },
@@ -175,9 +183,9 @@ class ProductDetailPage extends StatelessWidget {
                             ),
                     ),
 
-                    // =================================================
+                    // ==================================================
                     // INFORMASI PRODUK
-                    // =================================================
+                    // ==================================================
 
                     Padding(
                       padding: EdgeInsets.all(16.w),
@@ -185,9 +193,9 @@ class ProductDetailPage extends StatelessWidget {
                         crossAxisAlignment:
                             CrossAxisAlignment.start,
                         children: [
-                          // ================================
+                          // ==================================================
                           // KATEGORI
-                          // ================================
+                          // ==================================================
 
                           if (product.category.isNotEmpty)
                             Text(
@@ -201,9 +209,9 @@ class ProductDetailPage extends StatelessWidget {
 
                           SizedBox(height: 6.h),
 
-                          // ================================
+                          // ==================================================
                           // NAMA PRODUK
-                          // ================================
+                          // ==================================================
 
                           Text(
                             product.name,
@@ -215,9 +223,9 @@ class ProductDetailPage extends StatelessWidget {
 
                           SizedBox(height: 10.h),
 
-                          // ================================
+                          // ==================================================
                           // RATING
-                          // ================================
+                          // ==================================================
 
                           Row(
                             children: [
@@ -227,10 +235,12 @@ class ProductDetailPage extends StatelessWidget {
                               ),
                               SizedBox(width: 4.w),
                               Text(
-                                product.rating.toStringAsFixed(1),
+                                product.rating
+                                    .toStringAsFixed(1),
                                 style: TextStyle(
                                   fontSize: 14.sp,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight:
+                                      FontWeight.w600,
                                 ),
                               ),
                               SizedBox(width: 4.w),
@@ -246,9 +256,9 @@ class ProductDetailPage extends StatelessWidget {
 
                           SizedBox(height: 16.h),
 
-                          // ================================
+                          // ==================================================
                           // HARGA
-                          // ================================
+                          // ==================================================
 
                           Row(
                             crossAxisAlignment:
@@ -257,10 +267,12 @@ class ProductDetailPage extends StatelessWidget {
                               Flexible(
                                 child: Text(
                                   _formatPrice(displayPrice),
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow:
+                                      TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 24.sp,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight:
+                                        FontWeight.bold,
                                     color: Colors.blueAccent,
                                   ),
                                 ),
@@ -273,7 +285,8 @@ class ProductDetailPage extends StatelessWidget {
                                     fontSize: 13.sp,
                                     color: Colors.grey,
                                     decoration:
-                                        TextDecoration.lineThrough,
+                                        TextDecoration
+                                            .lineThrough,
                                   ),
                                 ),
                               ],
@@ -282,9 +295,9 @@ class ProductDetailPage extends StatelessWidget {
 
                           SizedBox(height: 20.h),
 
-                          // ================================
+                          // ==================================================
                           // STOK
-                          // ================================
+                          // ==================================================
 
                           Container(
                             width: double.infinity,
@@ -301,14 +314,12 @@ class ProductDetailPage extends StatelessWidget {
                                   size: 20.sp,
                                 ),
                                 SizedBox(width: 8.w),
-                                Expanded(
-                                  child: Text(
-                                    'Stok tersedia: ${product.stock}',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight:
-                                          FontWeight.w600,
-                                    ),
+                                Text(
+                                  'Stok tersedia: ${product.stock}',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight:
+                                        FontWeight.w600,
                                   ),
                                 ),
                               ],
@@ -317,9 +328,9 @@ class ProductDetailPage extends StatelessWidget {
 
                           SizedBox(height: 24.h),
 
-                          // ================================
+                          // ==================================================
                           // DESKRIPSI
-                          // ================================
+                          // ==================================================
 
                           Text(
                             'Deskripsi Produk',
@@ -342,12 +353,13 @@ class ProductDetailPage extends StatelessWidget {
                             ),
                           ),
 
-                          // ================================
+                          SizedBox(height: 24.h),
+
+                          // ==================================================
                           // VARIAN
-                          // ================================
+                          // ==================================================
 
                           if (product.variants.isNotEmpty) ...[
-                            SizedBox(height: 24.h),
                             Text(
                               'Varian Produk',
                               style: TextStyle(
@@ -368,13 +380,12 @@ class ProductDetailPage extends StatelessWidget {
                                 },
                               ).toList(),
                             ),
+                            SizedBox(height: 24.h),
                           ],
 
-                          SizedBox(height: 24.h),
-
-                          // ================================
-                          // TOMBOL TAMBAH KE KERANJANG
-                          // ================================
+                          // ==================================================
+                          // TAMBAH KE KERANJANG
+                          // ==================================================
 
                           SizedBox(
                             width: double.infinity,
@@ -382,13 +393,21 @@ class ProductDetailPage extends StatelessWidget {
                             child: ElevatedButton.icon(
                               onPressed: product.stock > 0
                                   ? () {
+                                      // Masukkan produk ke CartBloc.
+                                      sl<CartBloc>().add(
+                                        AddToCart(product),
+                                      );
+
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        const SnackBar(
+                                        SnackBar(
                                           content: Text(
-                                            'Produk ditambahkan ke keranjang.',
+                                            '${product.name} ditambahkan ke keranjang.',
                                           ),
+                                          behavior:
+                                              SnackBarBehavior
+                                                  .floating,
                                         ),
                                       );
                                     }
@@ -413,9 +432,9 @@ class ProductDetailPage extends StatelessWidget {
               );
             }
 
-            // =====================================================
-            // INITIAL
-            // =====================================================
+            // ==================================================
+            // INITIAL / FALLBACK
+            // ==================================================
 
             return const Center(
               child: Text(

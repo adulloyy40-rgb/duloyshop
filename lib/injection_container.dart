@@ -4,7 +4,9 @@ import 'package:get_it/get_it.dart';
 
 import 'core/network/dio_client.dart';
 
-import 'features/cart/presentation/bloc/cart/cart_bloc.dart';
+// ============================================================
+// PRODUCT
+// ============================================================
 
 import 'features/product/data/datasources/product_remote_datasource.dart';
 import 'features/product/data/repositories/product_repository_impl.dart';
@@ -15,6 +17,12 @@ import 'features/product/domain/usecases/get_products.dart';
 import 'features/product/presentation/bloc/product_list/product_list_bloc.dart';
 import 'features/product/presentation/bloc/product_detail/product_detail_bloc.dart';
 
+// ============================================================
+// CART
+// ============================================================
+
+import 'features/cart/presentation/bloc/cart/cart_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -24,79 +32,104 @@ Future<void> init() async {
 
   const secureStorage = FlutterSecureStorage();
 
-  sl.registerLazySingleton<FlutterSecureStorage>(
-    () => secureStorage,
-  );
+  if (!sl.isRegistered<FlutterSecureStorage>()) {
+    sl.registerLazySingleton<FlutterSecureStorage>(
+      () => secureStorage,
+    );
+  }
 
   // ============================================================
   // Network
   // ============================================================
 
-  sl.registerLazySingleton<DioClient>(
-    () => DioClient(
-      sl<FlutterSecureStorage>(),
-    ),
-  );
+  if (!sl.isRegistered<DioClient>()) {
+    sl.registerLazySingleton<DioClient>(
+      () => DioClient(
+        sl<FlutterSecureStorage>(),
+      ),
+    );
+  }
 
-  sl.registerLazySingleton<Dio>(
-    () => sl<DioClient>().dio,
-  );
-
-  // ============================================================
-  // Data Sources
-  // ============================================================
-
-  sl.registerLazySingleton<ProductRemoteDataSource>(
-    () => ProductRemoteDataSourceImpl(
-      sl<Dio>(),
-    ),
-  );
+  if (!sl.isRegistered<Dio>()) {
+    sl.registerLazySingleton<Dio>(
+      () => sl<DioClient>().dio,
+    );
+  }
 
   // ============================================================
-  // Repository
+  // Product Data Source
   // ============================================================
 
-  sl.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImpl(
-      remoteDataSource: sl<ProductRemoteDataSource>(),
-    ),
-  );
+  if (!sl.isRegistered<ProductRemoteDataSource>()) {
+    sl.registerLazySingleton<ProductRemoteDataSource>(
+      () => ProductRemoteDataSourceImpl(
+        sl<Dio>(),
+      ),
+    );
+  }
 
   // ============================================================
-  // Use Cases
+  // Product Repository
   // ============================================================
 
-  sl.registerLazySingleton<GetProducts>(
-    () => GetProducts(
-      sl<ProductRepository>(),
-    ),
-  );
+  if (!sl.isRegistered<ProductRepository>()) {
+    sl.registerLazySingleton<ProductRepository>(
+      () => ProductRepositoryImpl(
+        remoteDataSource: sl<ProductRemoteDataSource>(),
+      ),
+    );
+  }
+
+  // ============================================================
+  // Product Use Cases
+  // ============================================================
+
+  if (!sl.isRegistered<GetProducts>()) {
+    sl.registerLazySingleton<GetProducts>(
+      () => GetProducts(
+        sl<ProductRepository>(),
+      ),
+    );
+  }
 
   // ============================================================
   // Product List BLoC
   // ============================================================
 
-  sl.registerFactory<ProductListBloc>(
-    () => ProductListBloc(
-      getProducts: sl<GetProducts>(),
-    ),
-  );
+  if (!sl.isRegistered<ProductListBloc>()) {
+    sl.registerFactory<ProductListBloc>(
+      () => ProductListBloc(
+        getProducts: sl<GetProducts>(),
+      ),
+    );
+  }
 
   // ============================================================
   // Product Detail BLoC
   // ============================================================
 
-  sl.registerFactory<ProductDetailBloc>(
-    () => ProductDetailBloc(
-      productRepository: sl<ProductRepository>(),
-    ),
-  );
+  if (!sl.isRegistered<ProductDetailBloc>()) {
+    sl.registerFactory<ProductDetailBloc>(
+      () => ProductDetailBloc(
+        productRepository: sl<ProductRepository>(),
+      ),
+    );
+  }
 
   // ============================================================
-  // Cart BLoC
+  // CART BLoC
   // ============================================================
+  //
+  // Menggunakan LazySingleton supaya satu CartBloc
+  // digunakan bersama oleh halaman Detail Produk dan
+  // halaman Keranjang.
+  //
+  // JANGAN menggunakan registerFactory di sini.
+  //
 
-  sl.registerFactory<CartBloc>(
-    () => CartBloc(),
-  );
+  if (!sl.isRegistered<CartBloc>()) {
+    sl.registerLazySingleton<CartBloc>(
+      () => CartBloc(),
+    );
+  }
 }
