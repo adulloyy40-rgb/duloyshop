@@ -14,7 +14,8 @@ abstract class ProductRemoteDataSource {
   Future<ProductModel> getProductDetail(String id);
 }
 
-class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
+class ProductRemoteDataSourceImpl
+    implements ProductRemoteDataSource {
   final Dio dio;
 
   ProductRemoteDataSourceImpl(this.dio);
@@ -52,7 +53,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final responseData = response.data;
 
     if (responseData is! Map<String, dynamic>) {
-      throw Exception('Format response API tidak valid.');
+      throw Exception(
+        'Format response API tidak valid.',
+      );
     }
 
     if (responseData['success'] != true) {
@@ -65,32 +68,44 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final data = responseData['data'];
 
     if (data is! Map<String, dynamic>) {
-      throw Exception('Data produk tidak valid.');
+      throw Exception(
+        'Data produk tidak valid.',
+      );
     }
 
     final items = data['items'];
 
     if (items is! List) {
-      throw Exception('Daftar produk tidak valid.');
+      throw Exception(
+        'Daftar produk tidak valid.',
+      );
     }
 
     return items
         .map(
           (json) => ProductModel.fromJson(
-            Map<String, dynamic>.from(json as Map),
+            Map<String, dynamic>.from(
+              json as Map,
+            ),
           ),
         )
         .toList();
   }
 
   @override
-  Future<ProductModel> getProductDetail(String id) async {
-    final response = await dio.get('/products/$id');
+  Future<ProductModel> getProductDetail(
+    String id,
+  ) async {
+    final response = await dio.get(
+      '/products/$id',
+    );
 
     final responseData = response.data;
 
     if (responseData is! Map<String, dynamic>) {
-      throw Exception('Format response API tidak valid.');
+      throw Exception(
+        'Format response API tidak valid.',
+      );
     }
 
     if (responseData['success'] != true) {
@@ -103,7 +118,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final data = responseData['data'];
 
     if (data is! Map<String, dynamic>) {
-      throw Exception('Data detail produk tidak valid.');
+      throw Exception(
+        'Data detail produk tidak valid.',
+      );
     }
 
     return ProductModel.fromJson(

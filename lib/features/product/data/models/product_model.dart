@@ -17,19 +17,41 @@ class ProductModel extends Product {
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    final imageUrl = json['image_url']?.toString();
+
+    final images = <String>[];
+
+    if (imageUrl != null &&
+        imageUrl.isNotEmpty &&
+        imageUrl != 'null') {
+      images.add(imageUrl);
+    }
+
     return ProductModel(
       id: json['id']?.toString() ?? '',
-      name: json['name'] ?? '',
-      description: json['description'] ?? '',
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      discountPrice: (json['discount_price'] as num?)?.toDouble(),
-      images: List<String>.from(json['images'] ?? []),
-      category: json['category'] ?? '',
+      discountPrice:
+          (json['discount_price'] as num?)?.toDouble(),
+      images: images,
+      category: json['category_name']?.toString() ??
+          json['category']?.toString() ??
+          '',
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      reviewCount: json['review_count'] ?? 0,
-      stock: json['stock'] ?? 0,
-      variants: List<String>.from(json['variants'] ?? []),
-      isWishlisted: json['is_wishlisted'] ?? false,
+      reviewCount:
+          (json['review_count'] as num?)?.toInt() ?? 0,
+      stock:
+          (json['stock'] as num?)?.toInt() ?? 0,
+      variants: json['variants'] is List
+          ? List<String>.from(
+              (json['variants'] as List).map(
+                (item) => item.toString(),
+              ),
+            )
+          : <String>[],
+      isWishlisted:
+          json['is_wishlisted'] == true,
     );
   }
 
